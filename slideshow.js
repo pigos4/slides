@@ -1,14 +1,15 @@
 // Write your code here
 (function () {
-  let changePhoto = (direction, actualPhoto) => {
     const arrayOfPath = [
       "./img/20191022_144923.jpg",
       "./img/20191022_145635.jpg",
       "./img/20191022_154521.jpg",
       "./img/20191031_163727.jpg",
     ];
+  let changePhoto = (direction, actualPhoto) => {
+    
 
-    if (direction === "fo" && actualPhoto < 4) {
+    if (direction === "fo" && actualPhoto < arrayOfPath.length) {
       return {
         path: arrayOfPath[+actualPhoto],
         numberPhoto: +actualPhoto,
@@ -25,17 +26,21 @@
       };
     } else if (direction === "back" && actualPhoto === -1) {
       return {
-        path: arrayOfPath[3],
+        path: arrayOfPath[arrayOfPath.length-1],
         numberPhoto: 3,
       };
     }
   };
   const root = document.querySelector("#root");
-
   const title = document.createElement("p");
   const img = document.createElement("img");
   const numberPhoto = document.createElement("p");
-  const divButton = document.createElement("div");
+  const inputTime = document.createElement("input");
+  const divChangeTimer = document.createElement("div");
+  const buttonChangeTimer = document.createElement("button");
+  const spanDisplayDelay = document.createElement("span");
+
+  const divButtons = document.createElement("div");
   const buttonAutoBack = document.createElement("button");
   const buttonBack = document.createElement("button");
   const buttonStop = document.createElement("button");
@@ -43,8 +48,10 @@
   const buttonAutoForward = document.createElement("button");
   let intervalIdBack;
   let intervalIdForward;
+  let delaySlideShow = 1000;
 
-  title.innerText = "My pictures";
+  title.innerText = "Welcome to my slideshow";
+  title.id='title'
   buttonForward.innerText = "Forward";
   buttonBack.innerText = "Back";
   numberPhoto.innerText = 0;
@@ -52,6 +59,11 @@
   buttonAutoBack.innerText = "Auto Back";
   buttonAutoForward.innerText = "Auto Forward";
   buttonStop.innerText = "Stop";
+  buttonChangeTimer.innerText = "Change timer";
+  divChangeTimer.id = "divChangeTimer";
+  spanDisplayDelay.innerText = `${delaySlideShow / 1000} seconds`;
+  divButtons.id = 'divButtons'
+  inputTime.placeholder='Enter different delay'
 
   const forwardPhoto = () => {
     const nextPhoto = changePhoto("fo", +numberPhoto.innerText + 1);
@@ -68,7 +80,8 @@
       clearInterval(intervalIdBack);
     } else {
       clearInterval(intervalIdForward);
-      intervalIdBack = setInterval(backPhoto, 1000);
+      clearInterval(intervalIdBack);
+      intervalIdBack = setInterval(backPhoto, delaySlideShow);
     }
   }
   function intervalForward(stop) {
@@ -76,10 +89,19 @@
       clearInterval(intervalIdForward);
     } else {
       clearInterval(intervalIdBack);
-      intervalIdForward = setInterval(forwardPhoto, 1000);
+      clearInterval(intervalIdForward);
+      intervalIdForward = setInterval(forwardPhoto, delaySlideShow);
     }
   }
-  buttonForward.addEventListener("click", forwardPhoto);
+function getRandomColor() {
+  color = "hsl(" + Math.random() * 360 + ", 100%, 75%)";
+  return color;
+}
+setInterval(()=>{
+document.body.style.backgroundColor =getRandomColor()
+},2000)
+  
+    buttonForward.addEventListener("click", forwardPhoto);
   buttonBack.addEventListener("click", backPhoto);
   buttonAutoBack.addEventListener("click", () => intervalBack());
   buttonStop.addEventListener("click", () => {
@@ -87,14 +109,27 @@
     intervalForward(true);
   });
   buttonAutoForward.addEventListener("click", () => intervalForward());
+  buttonChangeTimer.addEventListener("click", () => {
+    delaySlideShow = inputTime.value * 1000;
+    spanDisplayDelay.innerText = `${delaySlideShow / 1000} seconds`;
+  });
 
-  root.appendChild(title);
-  root.appendChild(img);
-  root.appendChild(numberPhoto);
-  root.appendChild(buttonAutoBack);
+  root.append(
+    title,
+    img,
+    numberPhoto,
+    divChangeTimer,
+    divButtons
+  );
+divButtons.append(
+  buttonAutoBack,
+  buttonBack,
+  buttonStop,
+  buttonForward,
+  buttonAutoForward
+);
 
-  root.appendChild(buttonBack);
-  root.appendChild(buttonStop);
-  root.appendChild(buttonForward);
-  root.appendChild(buttonAutoForward);
+
+
+  divChangeTimer.append(inputTime, buttonChangeTimer, spanDisplayDelay);
 })();
