@@ -1,20 +1,18 @@
 // Write your code here
 (function () {
-    const arrayOfPath = [
-      "./img/20191022_144923.jpg",
-      "./img/20191022_145635.jpg",
-      "./img/20191022_154521.jpg",
-      "./img/20191031_163727.jpg",
-    ];
+  const arrayOfPath = [
+    "./img/20191022_144923.jpg",
+    "./img/20191022_145635.jpg",
+    "./img/20191022_154521.jpg",
+    "./img/20191031_163727.jpg",
+  ];
   let changePhoto = (direction, actualPhoto) => {
-    
-
-    if (direction === "fo" && actualPhoto < arrayOfPath.length) {
+    if (direction === "forward" && actualPhoto < arrayOfPath.length) {
       return {
         path: arrayOfPath[+actualPhoto],
         numberPhoto: +actualPhoto,
       };
-    } else if (direction === "fo" && actualPhoto > 3) {
+    } else if (      direction === "forward" &&      actualPhoto > arrayOfPath.length - 1    ) {
       return {
         path: arrayOfPath[0],
         numberPhoto: 0,
@@ -26,8 +24,8 @@
       };
     } else if (direction === "back" && actualPhoto === -1) {
       return {
-        path: arrayOfPath[arrayOfPath.length-1],
-        numberPhoto: 3,
+        path: arrayOfPath[arrayOfPath.length - 1],
+        numberPhoto: arrayOfPath.length - 1,
       };
     }
   };
@@ -37,21 +35,20 @@
   const numberPhoto = document.createElement("p");
   const inputTime = document.createElement("input");
   const divChangeTimer = document.createElement("div");
-  const buttonChangeTimer = document.createElement("button");
-  const spanDisplayDelay = document.createElement("span");
-
   const divButtons = document.createElement("div");
+  const spanDisplayDelay = document.createElement("span");
+  const buttonChangeTimer = document.createElement("button");
   const buttonAutoBack = document.createElement("button");
   const buttonBack = document.createElement("button");
   const buttonStop = document.createElement("button");
   const buttonForward = document.createElement("button");
   const buttonAutoForward = document.createElement("button");
-  let intervalIdBack;
-  let intervalIdForward;
+
+  let intervalId;
   let delaySlideShow = 1000;
 
   title.innerText = "Welcome to my slideshow";
-  title.id='title'
+  title.id = "title";
   buttonForward.innerText = "Forward";
   buttonBack.innerText = "Back";
   numberPhoto.innerText = 0;
@@ -62,74 +59,53 @@
   buttonChangeTimer.innerText = "Change timer";
   divChangeTimer.id = "divChangeTimer";
   spanDisplayDelay.innerText = `${delaySlideShow / 1000} seconds`;
-  divButtons.id = 'divButtons'
-  inputTime.placeholder='Enter different delay'
+  divButtons.id = "divButtons";
+  inputTime.placeholder = "Enter different delay";
+
+  const clearIntervals = () => clearInterval(intervalId);
 
   const forwardPhoto = () => {
-    const nextPhoto = changePhoto("fo", +numberPhoto.innerText + 1);
+    const nextPhoto = changePhoto("forward", Number(numberPhoto.innerText) + 1);
     img.src = nextPhoto.path;
     numberPhoto.innerText = nextPhoto.numberPhoto;
   };
   const backPhoto = () => {
-    const nextPhoto = changePhoto("back", +numberPhoto.innerText - 1);
+    const nextPhoto = changePhoto("back", Number(numberPhoto.innerText) - 1);
     img.src = nextPhoto.path;
     numberPhoto.innerText = nextPhoto.numberPhoto;
   };
-  function intervalBack(stop) {
-    if (stop) {
-      clearInterval(intervalIdBack);
-    } else {
-      clearInterval(intervalIdForward);
-      clearInterval(intervalIdBack);
-      intervalIdBack = setInterval(backPhoto, delaySlideShow);
-    }
-  }
-  function intervalForward(stop) {
-    if (stop) {
-      clearInterval(intervalIdForward);
-    } else {
-      clearInterval(intervalIdBack);
-      clearInterval(intervalIdForward);
-      intervalIdForward = setInterval(forwardPhoto, delaySlideShow);
-    }
-  }
-function getRandomColor() {
-  color = "hsl(" + Math.random() * 360 + ", 100%, 75%)";
-  return color;
-}
-setInterval(()=>{
-document.body.style.backgroundColor =getRandomColor()
-},2000)
+  const intervalBack = () => {
+    clearIntervals();
+    intervalId = setInterval(backPhoto, delaySlideShow);
+  };
+  const intervalForward = () => {
+    clearIntervals();
+    intervalId = setInterval(forwardPhoto, delaySlideShow);
+  };
+  const getRandomColor = () => "hsl(" + Math.random() * 360 + ", 100%, 75%)";
   
-    buttonForward.addEventListener("click", forwardPhoto);
+  setInterval(() => {
+    document.body.style.backgroundColor = getRandomColor();
+  }, 2000);
+
+  buttonForward.addEventListener("click", forwardPhoto);
   buttonBack.addEventListener("click", backPhoto);
   buttonAutoBack.addEventListener("click", () => intervalBack());
-  buttonStop.addEventListener("click", () => {
-    intervalBack(true);
-    intervalForward(true);
-  });
+  buttonStop.addEventListener("click", () => clearIntervals());
   buttonAutoForward.addEventListener("click", () => intervalForward());
   buttonChangeTimer.addEventListener("click", () => {
     delaySlideShow = inputTime.value * 1000;
     spanDisplayDelay.innerText = `${delaySlideShow / 1000} seconds`;
   });
 
-  root.append(
-    title,
-    img,
-    numberPhoto,
-    divChangeTimer,
-    divButtons
+  root.append(title, img, numberPhoto, divChangeTimer, divButtons);
+  divButtons.append(
+    buttonAutoBack,
+    buttonBack,
+    buttonStop,
+    buttonForward,
+    buttonAutoForward
   );
-divButtons.append(
-  buttonAutoBack,
-  buttonBack,
-  buttonStop,
-  buttonForward,
-  buttonAutoForward
-);
-
-
 
   divChangeTimer.append(inputTime, buttonChangeTimer, spanDisplayDelay);
 })();
